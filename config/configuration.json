@@ -1,8 +1,0 @@
-{
-  "geiger": {
-    "dev_location": "/dev/ttyUSB0",
-    "baud_rate": 115200,
-    "write_to": 0.5,
-    "read_to": 0.5
-  }
-}
