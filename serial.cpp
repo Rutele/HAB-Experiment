@@ -1,6 +1,5 @@
 #include "rs232.h"
 #include "serial.hpp"
-#include <iostream>
 #include <string>
 
 #define buffer_size 4096
@@ -31,7 +30,7 @@ void SerialPort::openPort(){
 
 void SerialPort::sendCommand(std::string cmd){
     correctMessage(cmd);
-    RS232_cputs(port_num, (cmd+'\0').data()); //String needs to be null-terminated
+    RS232_cputs(port_num, (cmd+'\0').c_str()); //String needs to be null-terminated
 }
 
 void SerialPort::correctMessage(std::string &msg){
