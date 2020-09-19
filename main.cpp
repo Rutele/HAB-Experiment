@@ -1,9 +1,12 @@
 #include "serial.hpp"
 #include <iostream>
+#include <unistd.h>
 
 int main(void){
 	SerialPort s1;
-    std::cout << s1.getPortNumber() << std::endl;
-    s1.openPort();
+    while(1){
+    s1.sendCommand("GETCPMH");
+    usleep(100000);
+    s1.receiveData();}
     return 0;
 }
