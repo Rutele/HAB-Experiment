@@ -18,6 +18,7 @@ class SerialPort{
         void setBaudRate(int bd_rate);
         void setMode(const char* md);
         void setMode(std::string md);
+        unsigned char* getBuffer();
         int getPortNumber();
         int getBaudRate();
         std::string getMode();

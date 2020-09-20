@@ -30,7 +30,7 @@ void SerialPort::openPort(){
 
 void SerialPort::sendCommand(std::string cmd){
     correctMessage(cmd);
-    RS232_cputs(port_num, (cmd+'\0').c_str()); //String needs to be null-terminated
+    RS232_cputs(port_num, cmd.c_str()); //String needs to be null-terminated
 }
 
 void SerialPort::correctMessage(std::string &msg){
@@ -44,14 +44,16 @@ int SerialPort::receiveData(){
     if (n>0){
         buf[n] = 0; //terminate the buffer
     }
-    printf("received %i bytes: %s\n", n, (char *)buf); // FOR DEBUG
+    //printf("received %i bytes: %s\n", n, (char *)buf); // FOR DEBUG
     return n; //It returnes the numbers of bytes received
 }
 
+//Setters and getters
 void SerialPort::setPortNumber(int p_n) {port_num = p_n;}
 void SerialPort::setBaudRate(int bd_rate) {baud_rate = bd_rate;}
 void SerialPort::setMode(const char* md) {mode = md;}
 void SerialPort::setMode(std::string md) {mode = md.c_str();}
+unsigned char* SerialPort::getBuffer() {return buf;}
 int SerialPort::getPortNumber() {return port_num;}
 int SerialPort::getBaudRate() {return baud_rate;}
 std::string SerialPort::getMode() {return mode;}
