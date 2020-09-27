@@ -1,5 +1,5 @@
 #include <iostream>
-#include "counter.hpp"
+#include "counter/counter.hpp"
 
 int main(void){
     GeigerCounter* c1 = new GeigerCounter;

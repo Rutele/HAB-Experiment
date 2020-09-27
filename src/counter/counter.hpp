@@ -1,4 +1,4 @@
-#include "serial.hpp"
+#include "../serial_port/serial.hpp"
 
 class GeigerCounter{
     private:
