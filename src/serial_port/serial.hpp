@@ -24,6 +24,7 @@ class SerialPort{
         std::string getMode();
 
     private:
+        bool loadConfig();
         void correctMessage(std::string &msg);
         void openPort();
 };

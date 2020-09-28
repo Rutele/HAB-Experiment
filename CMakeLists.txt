@@ -12,3 +12,9 @@ add_library(counter STATIC src/counter/counter.cpp)
 add_executable(hab src/hab.cpp)
 target_link_libraries(serial rs232)
 target_link_libraries(hab rs232 serial counter)
+
+add_custom_command(
+        TARGET hab POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+                ${CMAKE_SOURCE_DIR}/src/config.json
+                ${CMAKE_CURRENT_BINARY_DIR}/config.json)

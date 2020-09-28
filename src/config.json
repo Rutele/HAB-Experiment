@@ -1,0 +1,7 @@
+{
+  "geiger": {
+    "port_number": 16,
+    "baud_rate": 115200,
+    "mode": "8N1"
+  }
+}

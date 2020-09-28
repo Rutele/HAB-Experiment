@@ -1,15 +1,21 @@
 #include "rs232.h"
 #include "serial.hpp"
+#include "../rapidjson/document.h"
+#include "../rapidjson/filereadstream.h"
 #include <string>
 
 #define buffer_size 4096
 
 SerialPort::SerialPort(){
-    //This method opens the default port at which the meter is connected. This constructor is preffered
-    setPortNumber(16); //Default port corresponds to /dev/USB0
-    setBaudRate(115200); //That's the default baud rate of the geiger counter
-    setMode("8N1");
-    openPort();
+    if (!loadConfig()){ //If loading config fails fall back to the defaults
+        printf("Loading config failed! Using defaults.\n");
+        setPortNumber(16); //Default port corresponds to /dev/USB0
+        setBaudRate(115200); //That's the default baud rate of the geiger counter
+        setMode("8N1");
+        openPort();
+    }
+    else openPort();
+
 }
 
 SerialPort::SerialPort(int p_n, int bd_rate, std::string md){
@@ -24,6 +30,38 @@ SerialPort::~SerialPort(){
     RS232_CloseComport(port_num);
 }
 
+bool SerialPort::loadConfig(){
+    //File loading and parsing
+    std::string configFileName = "config.json";
+    FILE* configFile = fopen(configFileName.c_str(), "rb");
+
+    if (configFile == NULL) {
+        return false; //Return failure 
+    }
+
+    //Parsing the config into DOM structure
+    char json_buffer[65536]; //Make it smaller?
+    rapidjson::FileReadStream is(configFile, json_buffer, sizeof(json_buffer));
+    rapidjson::Document parsedConfig;
+    parsedConfig.ParseStream<0, rapidjson::UTF8<>, rapidjson::FileReadStream>(is);
+
+    //Structure check and eventual config loading
+    if (parsedConfig.HasMember("geiger")){
+        bool properConfig = true;
+        if (!parsedConfig["geiger"].HasMember("port_number")) properConfig = false;
+        if (!parsedConfig["geiger"].HasMember("baud_rate")) properConfig = false;
+        if (!parsedConfig["geiger"].HasMember("mode")) properConfig = false;
+        
+        if (properConfig){
+            setPortNumber(parsedConfig["geiger"]["port_number"].GetInt());
+            setBaudRate(parsedConfig["geiger"]["baud_rate"].GetInt());
+            setMode(parsedConfig["geiger"]["mode"].GetString());
+            return true;
+        }
+    }
+    return false;
+}
+
 void SerialPort::openPort(){
     RS232_OpenComport(port_num, baud_rate, mode.c_str(), 0);
 }
@@ -34,7 +72,6 @@ void SerialPort::sendCommand(std::string cmd){
 }
 
 void SerialPort::correctMessage(std::string &msg){
-    //I am not sure wether that's a tottaly good idea but I don't really want to play with copying str on RPi
     msg.insert(0, "<");
     msg.append(">>");
 }
@@ -44,7 +81,6 @@ int SerialPort::receiveData(){
     if (n>0){
         buf[n] = 0; //terminate the buffer
     }
-    //printf("received %i bytes: %s\n", n, (char *)buf); // FOR DEBUG
     return n; //It returnes the numbers of bytes received
 }
 
